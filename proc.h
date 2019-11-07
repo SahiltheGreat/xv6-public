@@ -1,9 +1,14 @@
+// #define NSEGS 7
+// #define NCPU          8  // maximum number of CPUs
+// #define NOFILE       16
+
 // Per-CPU state
 struct cpu {
   uchar apicid;                // Local APIC ID
   struct context *scheduler;   // swtch() here to enter scheduler
   struct taskstate ts;         // Used by x86 to find stack for interrupt
   struct segdesc gdt[NSEGS];   // x86 global descriptor table
+  // struct segdesc gdt[6];   // x86 global descriptor table
   volatile uint started;       // Has the CPU started?
   int ncli;                    // Depth of pushcli nesting.
   int intena;                  // Were interrupts enabled before pushcli?
@@ -11,6 +16,7 @@ struct cpu {
 };
 
 extern struct cpu cpus[NCPU];
+// extern struct cpu cpus[8];
 extern int ncpu;
 
 //PAGEBREAK: 17
@@ -32,6 +38,21 @@ struct context {
   uint eip;
 };
 
+
+extern struct proc* q0[48];
+extern struct proc* q1[48];
+extern struct proc* q2[48];
+extern struct proc* q3[48];
+extern struct proc* q4[48];
+extern int c0;
+extern int c1;
+extern int c2;
+extern int c3;
+extern int c4;
+extern struct proc_stat procstat_table;
+
+
+
 enum procstate { UNUSED, EMBRYO, SLEEPING, RUNNABLE, RUNNING, ZOMBIE };
 
 // Per-process state
@@ -46,9 +67,17 @@ struct proc {
   struct context *context;     // swtch() here to run process
   void *chan;                  // If non-zero, sleeping on chan
   int killed;                  // If non-zero, have been killed
-  struct file *ofile[NOFILE];  // Open files
+  // struct file *ofile[NOFILE];  // Open files
+  struct file *ofile[16];  // Open files
   struct inode *cwd;           // Current directory
   char name[16];               // Process name (debugging)
+
+  //Customised
+  int priority;
+  int ctime,etime,rtime,iotime;
+  int tickers;
+  int tickcounter;
+  char dum[8];
 };
 
 // Process memory is laid out contiguously, low addresses first:

@@ -1,11 +1,17 @@
 struct stat;
+struct proc_stat;
+struct rostat;
 struct rtcdate;
 
 // system calls
 int fork(void);
 int exit(void) __attribute__((noreturn));
 int wait(void);
+int waitx(int *wtime,int *rtime);
+int set_priority(int priority);
+// int getpinfo(struct proc_state *,int pid);
 int pipe(int*);
+void randomfunc(void);
 int write(int, const void*, int);
 int read(int, void*, int);
 int close(int);
@@ -23,6 +29,8 @@ int getpid(void);
 char* sbrk(int);
 int sleep(int);
 int uptime(void);
+int getpinfo(struct rostat *st,int pid);
+int getinf(struct rostat st,int pid);
 
 // ulib.c
 int stat(const char*, struct stat*);
